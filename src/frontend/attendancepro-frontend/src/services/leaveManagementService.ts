@@ -1,6 +1,8 @@
 import axios, { AxiosResponse } from 'axios';
 
 const API_BASE_URL = (import.meta as any).env?.VITE_API_BASE_URL || 'http://localhost:5000/api';
+const TUNNEL_AUTH_USER = (import.meta as any).env?.VITE_TUNNEL_AUTH_USER;
+const TUNNEL_AUTH_PASSWORD = (import.meta as any).env?.VITE_TUNNEL_AUTH_PASSWORD;
 
 export interface LeaveType {
   id: string;
@@ -134,6 +136,9 @@ class LeaveManagementService {
     baseURL: `${API_BASE_URL}/LeaveManagement`,
     headers: {
       'Content-Type': 'application/json',
+      ...(TUNNEL_AUTH_USER && TUNNEL_AUTH_PASSWORD ? {
+        'Authorization': `Basic ${btoa(`${TUNNEL_AUTH_USER}:${TUNNEL_AUTH_PASSWORD}`)}`
+      } : {})
     },
   });
 
