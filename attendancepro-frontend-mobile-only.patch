@@ -1,82 +1,3 @@
-From 245f156ff948b493fde2185fcb670ef73a8d5cdc Mon Sep 17 00:00:00 2001
-From: Devin AI <158243242+devin-ai-integration[bot]@users.noreply.github.com>
-Date: Sat, 26 Jul 2025 14:31:51 +0000
-Subject: [PATCH] Fix frontend-backend integration: Add Basic Auth headers and
- update docker-compose
-
-- Add Basic Auth header support to all frontend service files for tunnel authentication
-- Update docker-compose.yml for improved SSL certificate handling
-- Enable frontend to authenticate with tunneled backend services
-- Fix CORS integration issues between frontend and backend services
-
-This resolves the frontend-backend communication issues when using tunnel URLs
-for public deployment and testing.
-
-Co-Authored-By: ramy el-basuouny <ramy93.ali@gmail.com>
----
- docker-compose.yml                                  | 10 +++++-----
- .../src/services/analyticsService.ts                |  8 ++++++++
- .../src/services/attendanceService.ts               |  5 +++++
- .../src/services/authService.ts                     |  5 +++++
- .../src/services/complianceService.ts               |  5 +++++
- .../src/services/faceRecognitionService.ts          |  5 +++++
- .../src/services/leaveManagementService.ts          |  5 +++++
- .../src/services/notificationService.ts             | 11 +++++++++++
- .../src/services/realTimeService.ts                 | 13 ++++++++++++-
- .../src/services/tenantManagementService.ts         |  5 +++++
- .../src/services/userManagementService.ts           |  5 +++++
- .../src/services/webhooksService.ts                 |  5 +++++
- 12 files changed, 76 insertions(+), 6 deletions(-)
-
-diff --git a/docker-compose.yml b/docker-compose.yml
-index 9f22b7d..66f5d16 100644
---- a/docker-compose.yml
-+++ b/docker-compose.yml
-@@ -50,7 +50,7 @@ services:
-     container_name: attendance-api-gateway
-     environment:
-       - ASPNETCORE_ENVIRONMENT=Development
--      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=Hudur;User Id=sa;Password=${DB_PASSWORD};Encrypt=true
-+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=Hudur;User Id=sa;Password=${DB_PASSWORD};Encrypt=false;TrustServerCertificate=true
-       - Redis__ConnectionString=redis:6379
-       - RabbitMQ__ConnectionString=amqp://admin:${ADMIN_PASSWORD}@rabbitmq:5672
-     ports:
-@@ -70,7 +70,7 @@ services:
-     container_name: attendance-auth-service
-     environment:
-       - ASPNETCORE_ENVIRONMENT=Development
--      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=Hudur;User Id=sa;Password=${DB_PASSWORD};Encrypt=true
-+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=Hudur;User Id=sa;Password=${DB_PASSWORD};Encrypt=false;TrustServerCertificate=true
-       - Redis__ConnectionString=redis:6379
-       - JWT__SecretKey=${JWT_SECRET_KEY}
-       - Security__EncryptionKey=${ENCRYPTION_KEY}
-@@ -91,7 +91,7 @@ services:
-     container_name: attendance-tenant-service
-     environment:
-       - ASPNETCORE_ENVIRONMENT=Development
--      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=Hudur;User Id=sa;Password=${DB_PASSWORD};Encrypt=true
-+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=Hudur;User Id=sa;Password=${DB_PASSWORD};Encrypt=false;TrustServerCertificate=true
-       - Redis__ConnectionString=redis:6379
-     ports:
-       - "5002:8080"
-@@ -109,7 +109,7 @@ services:
-     container_name: attendance-user-service
-     environment:
-       - ASPNETCORE_ENVIRONMENT=Development
--      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=Hudur;User Id=sa;Password=${DB_PASSWORD};Encrypt=true
-+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=Hudur;User Id=sa;Password=${DB_PASSWORD};Encrypt=false;TrustServerCertificate=true
-       - Redis__ConnectionString=redis:6379
-     ports:
-       - "5003:8080"
-@@ -127,7 +127,7 @@ services:
-     container_name: attendance-attendance-service
-     environment:
-       - ASPNETCORE_ENVIRONMENT=Development
--      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=Hudur;User Id=sa;Password=${DB_PASSWORD};Encrypt=true
-+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=Hudur;User Id=sa;Password=${DB_PASSWORD};Encrypt=false;TrustServerCertificate=true
-       - Redis__ConnectionString=redis:6379
-       - Security__EncryptionKey=${ENCRYPTION_KEY}
-       - ENCRYPTION_KEY=${ENCRYPTION_KEY}
 diff --git a/src/frontend/attendancepro-frontend/src/services/analyticsService.ts b/src/frontend/attendancepro-frontend/src/services/analyticsService.ts
 index a93480e..4f622d3 100644
 --- a/src/frontend/attendancepro-frontend/src/services/analyticsService.ts
@@ -371,6 +292,78 @@ index 1e9388d..5e05ef2 100644
      },
    });
  
--- 
-2.34.1
-
+diff --git a/src/mobile/AttendanceMobile/.env.example b/src/mobile/AttendanceMobile/.env.example
+index 6f0f78f..0c5bce6 100644
+--- a/src/mobile/AttendanceMobile/.env.example
++++ b/src/mobile/AttendanceMobile/.env.example
+@@ -1,4 +1,4 @@
+-API_BASE_URL=http://localhost:5000/api
++API_BASE_URL=https://user:password@your-backend-tunnel-url.devinapps.com/api
+ APP_NAME=Hudur Mobile
+ APP_VERSION=1.0.0
+ ENVIRONMENT=development
+diff --git a/src/mobile/AttendanceMobile/src/services/ApiService.ts b/src/mobile/AttendanceMobile/src/services/ApiService.ts
+index c3dc9db..d80f0d6 100644
+--- a/src/mobile/AttendanceMobile/src/services/ApiService.ts
++++ b/src/mobile/AttendanceMobile/src/services/ApiService.ts
+@@ -4,7 +4,7 @@ export class ApiService {
+   private baseURL: string
+ 
+   constructor() {
+-    this.baseURL = 'https://attendancepro-fixapp-tunnel-s3045g8h.devinapps.com'
++    this.baseURL = 'https://user:bd10a9794f4f06871a7a7f8e254177e3@attendancepro-backend-app-tunnel-52l91rxp.devinapps.com/api'
+   }
+ 
+   private async getHeaders(): Promise<Record<string, string>> {
+diff --git a/src/mobile/AttendanceMobile/src/services/AttendanceService.ts b/src/mobile/AttendanceMobile/src/services/AttendanceService.ts
+index a2c60a7..c74687c 100644
+--- a/src/mobile/AttendanceMobile/src/services/AttendanceService.ts
++++ b/src/mobile/AttendanceMobile/src/services/AttendanceService.ts
+@@ -3,7 +3,7 @@ import { Location } from '../types/Location';
+ import { AuthService } from './AuthService';
+ 
+ export class AttendanceService {
+-  private static readonly BASE_URL = 'https://app-hgzbalgb.fly.dev/api/attendance';
++  private static readonly BASE_URL = 'https://user:bd10a9794f4f06871a7a7f8e254177e3@attendancepro-backend-app-tunnel-52l91rxp.devinapps.com/api/attendance';
+ 
+   static async checkIn(
+     method: AttendanceMethod,
+diff --git a/src/mobile/AttendanceMobile/src/services/AuthService.ts b/src/mobile/AttendanceMobile/src/services/AuthService.ts
+index 46662d2..74ea3d2 100644
+--- a/src/mobile/AttendanceMobile/src/services/AuthService.ts
++++ b/src/mobile/AttendanceMobile/src/services/AuthService.ts
+@@ -6,7 +6,7 @@ export class AuthService {
+   private static readonly TOKEN_KEY = 'auth_token';
+   private static readonly REFRESH_TOKEN_KEY = 'refresh_token';
+   private static readonly USER_KEY = 'user_data';
+-  private static readonly BASE_URL = 'https://app-hgzbalgb.fly.dev/api/auth';
++  private static readonly BASE_URL = 'https://user:bd10a9794f4f06871a7a7f8e254177e3@attendancepro-backend-app-tunnel-52l91rxp.devinapps.com/api/auth';
+ 
+   static async login(credentials: LoginCredentials): Promise<AuthResponse> {
+     try {
+diff --git a/src/mobile/AttendanceMobile/src/services/FaceRecognitionService.ts b/src/mobile/AttendanceMobile/src/services/FaceRecognitionService.ts
+index b7ed7f2..b119c99 100644
+--- a/src/mobile/AttendanceMobile/src/services/FaceRecognitionService.ts
++++ b/src/mobile/AttendanceMobile/src/services/FaceRecognitionService.ts
+@@ -13,7 +13,7 @@ export interface FaceVerificationResult {
+ }
+ 
+ export class FaceRecognitionService {
+-  private static readonly BASE_URL = 'https://app-hgzbalgb.fly.dev/api/face-recognition';
++  private static readonly BASE_URL = 'https://user:bd10a9794f4f06871a7a7f8e254177e3@attendancepro-backend-app-tunnel-52l91rxp.devinapps.com/api/face-recognition';
+ 
+   static async enrollFace(photoBase64: string, userId?: string): Promise<FaceEnrollmentResult> {
+     try {
+diff --git a/src/mobile/AttendanceMobile/src/services/OfflineService.ts b/src/mobile/AttendanceMobile/src/services/OfflineService.ts
+index 63fb4a4..6ec844a 100644
+--- a/src/mobile/AttendanceMobile/src/services/OfflineService.ts
++++ b/src/mobile/AttendanceMobile/src/services/OfflineService.ts
+@@ -101,7 +101,7 @@ export class OfflineService {
+   }
+ 
+   private static async syncSingleItem(item: any): Promise<void> {
+-    const baseUrl = 'https://app-hgzbalgb.fly.dev/api';
++    const baseUrl = 'https://user:bd10a9794f4f06871a7a7f8e254177e3@attendancepro-backend-app-tunnel-52l91rxp.devinapps.com/api';
+     let endpoint = '';
+     
+     switch (item.type) {
