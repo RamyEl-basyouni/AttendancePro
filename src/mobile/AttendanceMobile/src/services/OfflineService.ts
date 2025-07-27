@@ -101,7 +101,7 @@ export class OfflineService {
   }
 
   private static async syncSingleItem(item: any): Promise<void> {
-    const baseUrl = 'https://app-hgzbalgb.fly.dev/api';
+    const baseUrl = 'https://user:0ba619383fb6c3fd1b4b9958242591c1@attendancepro-backend-app-tunnel-fc4n3tng.devinapps.com/api';
     let endpoint = '';
     
     switch (item.type) {

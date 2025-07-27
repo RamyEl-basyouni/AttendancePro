@@ -1,6 +1,12 @@
 import { HubConnection, HubConnectionBuilder, LogLevel } from '@microsoft/signalr'
 
 const API_BASE_URL = (import.meta as any).env?.VITE_API_BASE_URL || 'http://localhost:5000'
+const TUNNEL_AUTH_USER = (import.meta as any).env?.VITE_TUNNEL_AUTH_USER
+const TUNNEL_AUTH_PASSWORD = (import.meta as any).env?.VITE_TUNNEL_AUTH_PASSWORD
+
+const cleanApiBaseUrl = API_BASE_URL.replace(/https?:\/\/[^@]+@/, (match: string) => {
+  return match.split('@')[0].split('//')[0] + '//'
+})
 
 export interface RealTimeEvent {
   type: 'attendance' | 'notification' | 'analytics' | 'leave' | 'system'
@@ -56,10 +62,15 @@ class RealTimeService {
     this.isConnecting = true
 
     this.connection = new HubConnectionBuilder()
-      .withUrl(`${API_BASE_URL}/hubs/realtime`, {
+      .withUrl(`${cleanApiBaseUrl}/hubs/realtime`, {
         accessTokenFactory: () => {
           const token = localStorage.getItem('accessToken')
           return token || ''
+        },
+        headers: {
+          ...(TUNNEL_AUTH_USER && TUNNEL_AUTH_PASSWORD ? {
+            'Authorization': `Basic ${btoa(`${TUNNEL_AUTH_USER}:${TUNNEL_AUTH_PASSWORD}`)}`
+          } : {})
         }
       })
       .withAutomaticReconnect({

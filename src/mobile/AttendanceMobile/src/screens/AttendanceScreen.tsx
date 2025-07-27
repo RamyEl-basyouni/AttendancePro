@@ -45,13 +45,13 @@ interface AttendanceScreenProps {
 const AttendanceScreen: React.FC<AttendanceScreenProps> = ({ navigation }) => {
   const { user } = useAuthStore();
   const { currentLocation } = useLocationStore();
-  const { 
-    currentStatus, 
-    todayAttendance, 
+  const {
+    currentStatus,
+    todayAttendance,
     isLoading,
     checkIn,
     checkOut,
-    fetchTodayAttendance 
+    fetchTodayAttendance
   } = useAttendanceStore();
 
   const [selectedMethod, setSelectedMethod] = useState<AttendanceMethod>(AttendanceMethod.GPS);
@@ -71,13 +71,13 @@ const AttendanceScreen: React.FC<AttendanceScreenProps> = ({ navigation }) => {
     return () => clearInterval(timeInterval);
   }, []);
 
-  useEffect(() => {
-    if (selectedMethod === AttendanceMethod.BEACON) {
-      startBeaconScanning();
-    } else {
-      stopBeaconScanning();
-    }
-  }, [selectedMethod]);
+  // useEffect(() => {
+  //   if (selectedMethod === AttendanceMethod.BEACON) {
+  //     startBeaconScanning();
+  //   } else {
+  //     stopBeaconScanning();
+  //   }
+  // }, [selectedMethod]);
 
   useEffect(() => {
     if (currentLocation) {
@@ -89,7 +89,7 @@ const AttendanceScreen: React.FC<AttendanceScreenProps> = ({ navigation }) => {
     try {
       await fetchTodayAttendance();
       await LocationService.startLocationUpdates();
-      
+
       if (selectedMethod === AttendanceMethod.FACE_RECOGNITION) {
         await requestCameraPermission();
       }
@@ -104,7 +104,7 @@ const AttendanceScreen: React.FC<AttendanceScreenProps> = ({ navigation }) => {
         console.log('Skipping camera permission request on iOS simulator');
         return;
       }
-      
+
       const permission = await Camera.requestCameraPermission();
       if (permission === 'denied') {
         Alert.alert(
@@ -118,31 +118,31 @@ const AttendanceScreen: React.FC<AttendanceScreenProps> = ({ navigation }) => {
     }
   };
 
-  const startBeaconScanning = async () => {
-    try {
-      await BeaconService.startRanging({ identifier: 'default', uuid: 'E2C56DB5-DFFB-48D2-B060-D0F5A71096E0' });
-      BeaconService.onBeaconsDetected((beacons) => {
-        setNearbyBeacons(beacons);
-      });
-    } catch (error) {
-      console.error('Beacon scanning error:', error);
-    }
-  };
+  // const startBeaconScanning = async () => {
+  //   try {
+  //     await BeaconService.startRanging({ identifier: 'default', uuid: 'E2C56DB5-DFFB-48D2-B060-D0F5A71096E0' });
+  //     BeaconService.onBeaconsDetected((beacons) => {
+  //       setNearbyBeacons(beacons);
+  //     });
+  //   } catch (error) {
+  //     console.error('Beacon scanning error:', error);
+  //   }
+  // };
 
-  const stopBeaconScanning = () => {
-    BeaconService.stopRanging({ identifier: 'default', uuid: 'E2C56DB5-DFFB-48D2-B060-D0F5A71096E0' });
-    setNearbyBeacons([]);
-  };
+  // const stopBeaconScanning = () => {
+  //   BeaconService.stopRanging({ identifier: 'default', uuid: 'E2C56DB5-DFFB-48D2-B060-D0F5A71096E0' });
+  //   setNearbyBeacons([]);
+  // };
 
   const checkGeofenceStatus = async () => {
     try {
       if (!currentLocation) return;
-      
+
       const isInside = await LocationService.isInsideGeofence(
         currentLocation.latitude,
         currentLocation.longitude
       );
-      
+
       setGeofenceStatus(isInside ? 'inside' : 'outside');
     } catch (error) {
       console.error('Geofence check error:', error);
@@ -152,7 +152,7 @@ const AttendanceScreen: React.FC<AttendanceScreenProps> = ({ navigation }) => {
 
   const handleAttendance = async (type: AttendanceType) => {
     if (isProcessing) return;
-    
+
     setIsProcessing(true);
     Vibration.vibrate(100);
 
@@ -245,7 +245,7 @@ const AttendanceScreen: React.FC<AttendanceScreenProps> = ({ navigation }) => {
           faceId: 'face-simulator-' + Date.now(),
         };
       }
-      
+
       if (!cameraRef.current) {
         throw new Error('Camera not ready');
       }
@@ -255,7 +255,7 @@ const AttendanceScreen: React.FC<AttendanceScreenProps> = ({ navigation }) => {
       });
 
       const faceResult = await FaceRecognitionService.verifyFace(photo.path);
-      
+
       if (!faceResult.success) {
         throw new Error('Face verification failed');
       }
@@ -281,7 +281,7 @@ const AttendanceScreen: React.FC<AttendanceScreenProps> = ({ navigation }) => {
         platform: Platform.OS,
       };
     }
-    
+
     try {
       const DeviceInfo = require('react-native-device-info');
       return {
@@ -317,10 +317,10 @@ const AttendanceScreen: React.FC<AttendanceScreenProps> = ({ navigation }) => {
               ]}
               onPress={() => setSelectedMethod(method)}
             >
-              <Icon 
-                name={getMethodIcon(method)} 
-                size={24} 
-                color={selectedMethod === method ? Colors.white : Colors.primary} 
+              <Icon
+                name={getMethodIcon(method)}
+                size={24}
+                color={selectedMethod === method ? Colors.white : Colors.primary}
               />
               <Text style={[
                 styles.methodText,
@@ -352,7 +352,7 @@ const AttendanceScreen: React.FC<AttendanceScreenProps> = ({ navigation }) => {
             </Text>
           </View>
         </View>
-        
+
         {todayAttendance && (
           <View style={styles.attendanceInfo}>
             <Text>Check-in: {todayAttendance.timestamp || 'Not recorded'}</Text>
@@ -377,7 +377,7 @@ const AttendanceScreen: React.FC<AttendanceScreenProps> = ({ navigation }) => {
             { backgroundColor: getLocationStatusColor() }
           ]}>
             <Text style={styles.locationText}>
-              {geofenceStatus === 'inside' ? 'Inside Work Area' : 
+              {geofenceStatus === 'inside' ? 'Inside Work Area' :
                geofenceStatus === 'outside' ? 'Outside Work Area' : 'Checking...'}
             </Text>
           </View>
@@ -445,7 +445,7 @@ const AttendanceScreen: React.FC<AttendanceScreenProps> = ({ navigation }) => {
 
   const renderCamera = () => {
     if (!showCamera || (!device && !(__DEV__ && Platform.OS === 'ios'))) return null;
-    
+
     if (__DEV__ && Platform.OS === 'ios') {
       return (
         <View style={styles.cameraContainer}>
@@ -526,7 +526,7 @@ const AttendanceScreen: React.FC<AttendanceScreenProps> = ({ navigation }) => {
       {renderLocationStatus()}
       {renderMethodSelector()}
       {renderAttendanceButtons()}
-      
+
       <FAB
         style={styles.fab}
         icon="history"

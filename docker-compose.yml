@@ -50,7 +50,7 @@ services:
     container_name: attendance-api-gateway
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=Hudur;User Id=sa;Password=${DB_PASSWORD};Encrypt=true
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=Hudur;User Id=sa;Password=${DB_PASSWORD};Encrypt=false;TrustServerCertificate=true
       - Redis__ConnectionString=redis:6379
       - RabbitMQ__ConnectionString=amqp://admin:${ADMIN_PASSWORD}@rabbitmq:5672
     ports:
@@ -70,7 +70,7 @@ services:
     container_name: attendance-auth-service
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=Hudur;User Id=sa;Password=${DB_PASSWORD};Encrypt=true
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=Hudur;User Id=sa;Password=${DB_PASSWORD};Encrypt=false;TrustServerCertificate=true
       - Redis__ConnectionString=redis:6379
       - JWT__SecretKey=${JWT_SECRET_KEY}
       - Security__EncryptionKey=${ENCRYPTION_KEY}
@@ -91,7 +91,7 @@ services:
     container_name: attendance-tenant-service
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=Hudur;User Id=sa;Password=${DB_PASSWORD};Encrypt=true
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=Hudur;User Id=sa;Password=${DB_PASSWORD};Encrypt=false;TrustServerCertificate=true
       - Redis__ConnectionString=redis:6379
     ports:
       - "5002:8080"
@@ -109,7 +109,7 @@ services:
     container_name: attendance-user-service
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=Hudur;User Id=sa;Password=${DB_PASSWORD};Encrypt=true
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=Hudur;User Id=sa;Password=${DB_PASSWORD};Encrypt=false;TrustServerCertificate=true
       - Redis__ConnectionString=redis:6379
     ports:
       - "5003:8080"
@@ -127,7 +127,7 @@ services:
     container_name: attendance-attendance-service
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=Hudur;User Id=sa;Password=${DB_PASSWORD};Encrypt=true
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=Hudur;User Id=sa;Password=${DB_PASSWORD};Encrypt=false;TrustServerCertificate=true
       - Redis__ConnectionString=redis:6379
       - Security__EncryptionKey=${ENCRYPTION_KEY}
       - ENCRYPTION_KEY=${ENCRYPTION_KEY}

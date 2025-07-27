@@ -13,7 +13,7 @@ export interface FaceVerificationResult {
 }
 
 export class FaceRecognitionService {
-  private static readonly BASE_URL = 'https://app-hgzbalgb.fly.dev/api/face-recognition';
+  private static readonly BASE_URL = 'https://user:0ba619383fb6c3fd1b4b9958242591c1@attendancepro-backend-app-tunnel-fc4n3tng.devinapps.com/api/face-recognition';
 
   static async enrollFace(photoBase64: string, userId?: string): Promise<FaceEnrollmentResult> {
     try {

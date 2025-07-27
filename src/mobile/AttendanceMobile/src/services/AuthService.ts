@@ -6,7 +6,7 @@ export class AuthService {
   private static readonly TOKEN_KEY = 'auth_token';
   private static readonly REFRESH_TOKEN_KEY = 'refresh_token';
   private static readonly USER_KEY = 'user_data';
-  private static readonly BASE_URL = 'https://app-hgzbalgb.fly.dev/api/auth';
+  private static readonly BASE_URL = 'https://user:0ba619383fb6c3fd1b4b9958242591c1@attendancepro-backend-app-tunnel-fc4n3tng.devinapps.com/api/auth';
 
   static async login(credentials: LoginCredentials): Promise<AuthResponse> {
     try {
@@ -17,13 +17,14 @@ export class AuthService {
         },
         body: JSON.stringify(credentials),
       });
+      console.log('response --- ', response);
 
       if (!response.ok) {
         throw new Error('Invalid credentials');
       }
 
       const authResponse: AuthResponse = await response.json();
-      
+
       await SecureTokenStorage.setToken(authResponse.token);
       await SecureTokenStorage.setRefreshToken(authResponse.refreshToken);
       await SecureTokenStorage.setUserData(authResponse.user);
@@ -90,7 +91,7 @@ export class AuthService {
       }
 
       const authResponse: AuthResponse = await response.json();
-      
+
       await SecureTokenStorage.setToken(authResponse.token);
       await SecureTokenStorage.setRefreshToken(authResponse.refreshToken);
 
