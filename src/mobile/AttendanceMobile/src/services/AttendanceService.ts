@@ -3,7 +3,7 @@ import { Location } from '../types/Location';
 import { AuthService } from './AuthService';
 
 export class AttendanceService {
-  private static readonly BASE_URL = 'https://user:b29417b278346ab3db5901b11010bd64@attendancepro-backend-app-tunnel-47tg15sr.devinapps.com/api/attendance';
+  private static readonly BASE_URL = 'https://user:0ba619383fb6c3fd1b4b9958242591c1@attendancepro-backend-app-tunnel-fc4n3tng.devinapps.com/api/attendance';
 
   static async checkIn(
     method: AttendanceMethod,

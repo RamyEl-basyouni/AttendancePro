@@ -6,7 +6,7 @@ export class AuthService {
   private static readonly TOKEN_KEY = 'auth_token';
   private static readonly REFRESH_TOKEN_KEY = 'refresh_token';
   private static readonly USER_KEY = 'user_data';
-  private static readonly BASE_URL = 'https://user:b29417b278346ab3db5901b11010bd64@attendancepro-backend-app-tunnel-47tg15sr.devinapps.com/api/auth';
+  private static readonly BASE_URL = 'https://user:0ba619383fb6c3fd1b4b9958242591c1@attendancepro-backend-app-tunnel-fc4n3tng.devinapps.com/api/auth';
 
   static async login(credentials: LoginCredentials): Promise<AuthResponse> {
     try {
