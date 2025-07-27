@@ -17,13 +17,14 @@ export class AuthService {
         },
         body: JSON.stringify(credentials),
       });
+      console.log('response --- ', response);
 
       if (!response.ok) {
         throw new Error('Invalid credentials');
       }
 
       const authResponse: AuthResponse = await response.json();
-      
+
       await SecureTokenStorage.setToken(authResponse.token);
       await SecureTokenStorage.setRefreshToken(authResponse.refreshToken);
       await SecureTokenStorage.setUserData(authResponse.user);
@@ -90,7 +91,7 @@ export class AuthService {
       }
 
       const authResponse: AuthResponse = await response.json();
-      
+
       await SecureTokenStorage.setToken(authResponse.token);
       await SecureTokenStorage.setRefreshToken(authResponse.refreshToken);
 
